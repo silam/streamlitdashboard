@@ -149,15 +149,16 @@ with col4:
     st.metric("Avg Survey", f"{filtered['survey_rating'].mean():.2f} / 5")
 
 st.divider()
-ts = filtered.groupby('date', as_index=False).agg(revenue=('sales', 'sum'), units=('units', 'sum'), rating=('survey_ra...
-(...).mark_line().encode(x='date:T', y='revenue:Q', tooltip=['date:T', 'revenue:Q', 'units:Q', 'rat...
+ts = filtered.groupby('date', as_index=False).agg(revenue=('sales', 'sum'), units=('units', 'sum'), rating=('survey_rating', 'mean'))
+# (...).mark_line().encode(x='date:T', y='revenue:Q', tooltip=['date:T', 'revenue:Q', 'units:Q', 'rat...
+# '
 st.altair_chart(line_rev, use_container_width=True)
 
 cat = filtered.groupby('category', as_index=False).agg(revenue=('sales', 'sum'), units=('units', 'sum'))
-bar_cat = alt.Chart(cat).mark_bar().encode(x='category:N', y='revenue:Q', tooltip=['category', 'revenue', 'units']).pr...
+bar_cat = alt.Chart(cat).mark_bar().encode(x='category:N', y='revenue:Q', tooltip=['category', 'revenue', 'units']).properties(width=300)
 
 reg = filtered.groupby('region', as_index=False).agg(revenue=('sales', 'sum'), units=('units', 'sum'))
-bar_reg = alt.Chart(reg).mark_bar().encode(x='region:N', y='revenue:Q', tooltip=['region', 'revenue', 'units']).proper...
+bar_reg = alt.Chart(reg).mark_bar().encode(x='region:N', y='revenue:Q', tooltip=['region', 'revenue', 'units']).properties(width=300)
 
 c1, c2 = st.columns(2)
 with c1:
@@ -165,10 +166,10 @@ with c1:
 with c2:
     st.altair_chart(bar_reg, use_container_width=True)
 
-hist = alt.Chart(filtered).mark_bar().encode(x=alt.X('survey_rating:Q', bin=alt.Bin(maxbins=5)), y='count()', tooltip=...
+hist = alt.Chart(filtered).mark_bar().encode(x=alt.X('survey_rating:Q', bin=alt.Bin(maxbins=5)), y='count()', tooltip=['count()']).properties(width=300)
 st.altair_chart(hist, use_container_width=True)
 
-corr = alt.Chart(ts).mark_circle(size=80).encode(x='rating:Q', y='revenue:Q', tooltip=['date:T', 'rating:Q', 'revenue:...
+corr = alt.Chart(ts).mark_circle(size=80).encode(x='rating:Q', y='revenue:Q', tooltip=['date:T', 'rating:Q', 'revenue:Q']).properties(width=300)
 st.altair_chart(corr, use_container_width=True)
 
 st.divider()
@@ -181,19 +182,3 @@ filtered.to_csv(csv_buf, index=False)
 st.download_button("Download filtered CSV", data=csv_buf.getvalue(), file_name="filtered_sales.csv", mime="text/csv")
 st.caption("Use the sidebar to adjust filters or upload your own dataset.")
 
-    # Date filter
-    # min_date = df['Date'].min()
-    # max_date = df['Date'].max()
-    # date_range = st.date_input("Select date range", [min_date, max_date], min_value=min_date, max_value=max_date)
-
-    # # Region filter
-    # regions = df['Region'].unique().tolist()
-    # selected_regions = st.multiselect("Select regions", regions, default=regions)
-
-    # # Channel filter
-    # channels = df['Channel'].unique().tolist()
-    # selected_channels = st.multiselect("Select channels", channels, default=channels)
-
-    # # Category filter
-    # categories = df['Category'].unique().tolist()
-    # selected_categories = st.multiselect("Select categories", categories, default=categories)
